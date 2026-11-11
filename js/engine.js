@@ -41,6 +41,12 @@ function yiStats(cfg, DB) {
   const bonusAD = it.ad + 5.4 * (cfg.shards || 0);
   let asBonus = YI.asLvl * growth(cfg.level) + it.as;
   if (cfg.r && cfg.level >= 6) asBonus += YI.rAS[cfg.level >= 16 ? 2 : cfg.level >= 11 ? 1 : 0];
+  if (cfg.live) {              // stats lues dans le jeu : elles remplacent le calcul (runes et bonus déjà inclus)
+    const L = cfg.live;
+    const out = { baseAD, bonusAD: Math.max(0, L.ad - baseAD), asBonus: (L.as / YI.as - 1) * 100, it };
+    it.le = L.leth; it.pen = L.pen; it.cr = Math.min(100, L.crit * 100);
+    return out;
+  }
   return { baseAD, bonusAD, asBonus, it };
 }
 

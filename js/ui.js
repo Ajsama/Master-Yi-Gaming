@@ -1,5 +1,6 @@
 // ---------- Données ----------
 let DB = {}, CH = {}, VER = DATA.v, LIVE = false;
+let GAME = null;            // dernière lecture du jeu (application de bureau uniquement), jamais sauvegardée
 function indexData() { DB = {}; CH = {}; DATA.i.forEach(i => DB[i.id] = i); DATA.c.forEach(c => CH[c[0]] = c); }
 indexData();
 
@@ -38,7 +39,7 @@ const PRESETS = [
 const minLevel = seq => new Set(seq.filter(a => a !== 'A')).size;   // un sort appris par niveau
 const KEY = 'wuju-calc-v2';
 let state = {
-  tab: 'game', patch: defaultPatch(), patchSet: false, recents: ['Syndra', 'Zed', 'Ahri', 'Yasuo', 'Viktor'],
+  tab: 'game', patch: defaultPatch(), patchSet: false, recents: ['Syndra', 'Zed', 'Ahri', 'Yasuo', 'Viktor'], liveOn: true, liveTarget: null,
   yi: { level: 5, qRank: 3, eRank: 1, items: ['1036', '1036'], shards: 2, rune: 'none', r: false, ignite: false, qIso: true, dsStacks: 0 },
   tg: { id: 'Syndra', level: 5, items: ['1056'], hpPct: 60, bone: false, shield: 0, extraHp: 0, extraArmor: 0 },
   seq: ['E', 'Q', 'A', 'A', 'A']
@@ -61,14 +62,17 @@ const keys = seq => seq.map(a => `<span class="k ${a}">${a === 'A' ? 'Auto' : a}
 
 const YI_QUICK = ['1036', '1055', '1037', '1038', '1042', '1043', '3006'];
 const TG_QUICK = ['1056', '1054', '1055', '1029', '1028', '1082', '3047'];
-function cfg() { return Object.assign({ patch: state.patch }, state.yi); }
+function cfg() { return Object.assign({ patch: state.patch }, state.yi, { live: GAME && state.liveOn ? GAME.stats : null }); }
+const isLocked = seq => GAME && state.liveOn ? seq.some(a => GAME.ranks[a] === 0) : state.yi.level < minLevel(seq);
+const needTxt = seq => GAME && state.liveOn ? 'Sort pas encore appris' : `À partir du niveau ${minLevel(seq)}`;
 
 // ---------- Parties fixes ----------
 function champBtn(c) { return `<button class="chip${c[0] === state.tg.id ? ' on' : ''}" data-champ="${esc(c[0])}">${IMG(cimg(c[0]))}${esc(c[1])}</button>`; }
 function renderChamps() {
   const q = norm($('csearch').value.trim());
   $('champs').innerHTML = DATA.c.filter(c => c[0] !== 'MasterYi' && (!q || norm(c[1]).includes(q) || norm(c[0]).includes(q))).map(champBtn).join('');
-  $('recents').innerHTML = state.recents.filter(id => CH[id]).map(id => champBtn(CH[id])).join('');
+  const quick = GAME && state.liveOn ? GAME.enemies.map(e => e.id) : state.recents;   // en partie : l'équipe adverse
+  $('recents').innerHTML = quick.filter(id => CH[id]).map(id => champBtn(CH[id])).join('');
 }
 function itemBtn(id) { const it = DB[id]; return it ? `<button class="chip" data-item="${id}" title="${it.g} PO">${IMG(iimg(id))}${esc(it.n)}</button>` : ''; }
 function renderPicker(side) {
@@ -122,12 +126,12 @@ function render() {
   let best = -1, top = null;
   const rows = $('presets').children;
   PRESETS.forEach(([name, seq], i) => {
-    const r = simulate(c, t, seq, DB, champ), el = rows[i], locked = state.yi.level < minLevel(seq), dead = !locked && r.hpLeft <= 0;
+    const r = simulate(c, t, seq, DB, champ), el = rows[i], locked = isLocked(seq), dead = !locked && r.hpLeft <= 0;
     if (dead && best < 0) best = i;
     if (!locked && (!top || r.total > top.total)) top = r;
     el.classList.toggle('kill', dead); el.classList.toggle('locked', locked);
     el.querySelector('.keys').innerHTML = keys(seq) + (c.ignite ? '<span class="k I">Embr.</span>' : '');
-    el.querySelector('.res').innerHTML = locked ? `<small>À partir du niveau ${minLevel(seq)}</small>` : dead ? `Mort<small>${r0(-r.hpLeft)} PV de marge</small>` : `<span class="num">${r0(r.total)}</span><small>reste ${r0(r.hpLeft)} PV</small>`;
+    el.querySelector('.res').innerHTML = locked ? `<small>${needTxt(seq)}</small>` : dead ? `Mort<small>${r0(-r.hpLeft)} PV de marge</small>` : `<span class="num">${r0(r.total)}</span><small>reste ${r0(r.hpLeft)} PV</small>`;
     const sc = Math.min(1, r.startHp / r.total), w = x => (100 * x * sc / r.startHp).toFixed(2) + '%';
     el.querySelector('.p').style.width = w(r.tot.phys); el.querySelector('.m').style.width = w(r.tot.magic); el.querySelector('.t').style.width = w(r.tot.tru);
     el.querySelector('.meta').innerHTML = `<span class="best-tag">Le plus court qui tue · </span>${r0(r.total)} dégâts en ${r.time.toFixed(1)} s · tue sous ${r0(r.total)} PV (${Math.min(100, 100 * r.total / r.hpMax).toFixed(0)} %)`;
@@ -192,6 +196,7 @@ document.addEventListener('click', e => {
     if (path === 'yi.level') { state.yi.qRank = rankAt('Q', state.yi.level); state.yi.eRank = rankAt('E', state.yi.level); }
   } else if (d.champ) {
     if (d.champ !== state.tg.id) { state.tg.id = d.champ; state.tg.items = []; state.tg.shield = 0; state.tg.extraHp = 0; state.tg.extraArmor = 0; }
+    if (GAME) state.liveTarget = d.champ;
     state.recents = [d.champ].concat(state.recents.filter(x => x !== d.champ)).slice(0, 6);
     $('csearch').value = ''; renderChamps();
   }

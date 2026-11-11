@@ -1,0 +1,13 @@
+{
+  "name": "wuju-calc-desktop",
+  "version": "0.1.0",
+  "description": "Wuju Calc en fenêtre de bureau, rempli avec les données de la partie en cours",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^45.0.0"
+  }
+}

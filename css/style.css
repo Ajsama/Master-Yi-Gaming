@@ -36,6 +36,13 @@ h1{font-family:var(--display);font-weight:700;font-size:32px;letter-spacing:.08e
 .tabs .ink{position:absolute;bottom:0;height:2px;background:linear-gradient(90deg,var(--violet),var(--blade));box-shadow:0 0 12px var(--violet);transition:left .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1)}
 .dataver{width:100%;color:var(--muted);font-size:12px;text-align:right;margin-top:-6px}
 
+.live{width:100%;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;font-size:13px;color:var(--muted);background:var(--glass);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.live[hidden]{display:none}
+.live .tog{margin-left:auto}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--safe)}
+.dot.on{background:#5fe0a0;box-shadow:0 0 10px #5fe0a0;animation:pulse 1.6s ease-in-out infinite}
+.dot.warn{background:var(--petal)}
+@keyframes pulse{50%{opacity:.45}}
 h2{font-family:var(--display);font-weight:600;font-size:14px;letter-spacing:.18em;text-transform:uppercase;margin:0 0 14px;color:var(--blade)}
 h3{font-size:12.5px;font-weight:700;color:var(--muted);margin:16px 0 7px;letter-spacing:.02em}
 section.card{background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:18px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}

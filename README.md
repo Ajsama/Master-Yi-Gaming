@@ -15,8 +15,22 @@ Calculateur de dégâts pour Maître Yi (mid) : choisis l'adversaire, les niveau
 | `js/ui.js` | Interface, état, liste des combos de base (`PRESETS`) |
 | `js/ddragon.js` | Extraction des stats depuis Data Dragon |
 | `js/data.js` | Copie de secours des données Riot, utilisée si le chargement en direct échoue |
+| `js/live.js` | Mode en direct, actif seulement dans l'application de bureau |
+| `desktop/` | Application Electron |
 | `tests/engine.test.js` | Tests du moteur |
 | `tools/update-data.js` | Régénère `js/data.js` |
+
+## Application de bureau (remplissage automatique en partie)
+
+Le dossier `desktop/` contient une fenêtre Electron qui ouvre ce même site et le remplit avec les données de la partie en cours : ton niveau, tes objets, tes stats réelles, les rangs de tes sorts, ta rune clé, puis le champion, le niveau et les objets de ton adversaire. Les PV adverses restent à régler à la main, le jeu ne les donne pas.
+
+```
+cd desktop
+npm install
+npm start
+```
+
+Elle interroge une fois par seconde l'API locale officielle du jeu (`https://127.0.0.1:2999/liveclientdata/allgamedata`) et ne touche pas au processus du jeu. Hors partie, le site reste en saisie manuelle. `js/live.js` fait la traduction entre la réponse du jeu et l'état du site.
 
 ## Commandes
 
