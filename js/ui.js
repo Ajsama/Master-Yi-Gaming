@@ -63,8 +63,14 @@ const keys = seq => seq.map(a => `<span class="k ${a}">${a === 'A' ? 'Auto' : a}
 const YI_QUICK = ['1036', '1055', '1037', '1038', '1042', '1043', '3006'];
 const TG_QUICK = ['1056', '1054', '1055', '1029', '1028', '1082', '3047'];
 function cfg() { return Object.assign({ patch: state.patch }, state.yi, { live: GAME && state.liveOn ? GAME.stats : null }); }
-const isLocked = seq => GAME && state.liveOn ? seq.some(a => GAME.ranks[a] === 0) : state.yi.level < minLevel(seq);
-const needTxt = seq => GAME && state.liveOn ? 'Sort pas encore appris' : `À partir du niveau ${minLevel(seq)}`;
+// Un combo dont un sort manque reste affiché, calculé comme si le sort était au rang 1, avec une petite mention.
+function needTxt(seq) {
+  if (GAME && state.liveOn) {
+    const miss = [...new Set(seq.filter(a => GAME.ranks[a] === 0))];
+    return miss.length ? `${miss.join(' et ')} pas encore pris (compté rang 1)` : '';
+  }
+  return state.yi.level < minLevel(seq) ? `dispo au niveau ${minLevel(seq)}` : '';
+}
 
 // ---------- Parties fixes ----------
 function champBtn(c) { return `<button class="chip${c[0] === state.tg.id ? ' on' : ''}" data-champ="${esc(c[0])}">${IMG(cimg(c[0]))}${esc(c[1])}</button>`; }
@@ -84,9 +90,8 @@ function renderPicker(side) {
 }
 function buildPresets() {       // lignes créées une seule fois, pour que les barres s'animent
   $('presets').innerHTML = PRESETS.map(([name], i) => `<button class="combo" data-preset="${i}" style="--i:${i}">
-    <span><span class="name">${esc(name)}</span><span class="keys"></span></span><span class="res"></span>
-    <span class="bar"><i class="p"></i><i class="m"></i><i class="t"></i></span>
-    <span class="meta"></span></button>`).join('');
+    <span class="top"><span class="name"></span><span class="res"></span></span>
+    <span class="mid"><span class="keys"></span><span class="bar"><i class="p"></i><i class="m"></i><i class="t"></i></span><span class="meta"></span></span></button>`).join('');
 }
 function renderStatic() { renderChamps(); renderPicker('yi'); renderPicker('tg'); }
 function setTab(t) {
@@ -126,17 +131,21 @@ function render() {
   let best = -1, top = null;
   const rows = $('presets').children;
   PRESETS.forEach(([name, seq], i) => {
-    const r = simulate(c, t, seq, DB, champ), el = rows[i], locked = isLocked(seq), dead = !locked && r.hpLeft <= 0;
+    const r = simulate(c, t, seq, DB, champ), el = rows[i], need = needTxt(seq), dead = r.hpLeft <= 0;
     if (dead && best < 0) best = i;
-    if (!locked && (!top || r.total > top.total)) top = r;
-    el.classList.toggle('kill', dead); el.classList.toggle('locked', locked);
+    if (!top || r.total > top.total) top = r;
+    el.classList.toggle('kill', dead);
+    el.querySelector('.name').innerHTML = `<em class="best-tag">Le plus court qui tue · </em>${esc(name)}` + (need ? ` <em class="need">· ${esc(need)}</em>` : '');
     el.querySelector('.keys').innerHTML = keys(seq) + (c.ignite ? '<span class="k I">Embr.</span>' : '');
-    el.querySelector('.res').innerHTML = locked ? `<small>${needTxt(seq)}</small>` : dead ? `Mort<small>${r0(-r.hpLeft)} PV de marge</small>` : `<span class="num">${r0(r.total)}</span><small>reste ${r0(r.hpLeft)} PV</small>`;
+    el.querySelector('.res').innerHTML = dead ? `Mort<small>marge ${r0(-r.hpLeft)} PV</small>` : `<span class="num">${r0(r.total)}</span><small>reste ${r0(r.hpLeft)} PV</small>`;
     const sc = Math.min(1, r.startHp / r.total), w = x => (100 * x * sc / r.startHp).toFixed(2) + '%';
     el.querySelector('.p').style.width = w(r.tot.phys); el.querySelector('.m').style.width = w(r.tot.magic); el.querySelector('.t').style.width = w(r.tot.tru);
-    el.querySelector('.meta').innerHTML = `<span class="best-tag">Le plus court qui tue · </span>${r0(r.total)} dégâts en ${r.time.toFixed(1)} s · tue sous ${r0(r.total)} PV (${Math.min(100, 100 * r.total / r.hpMax).toFixed(0)} %)`;
+    el.querySelector('.meta').textContent = `tue sous ${r0(r.total)} PV (${Math.min(100, 100 * r.total / r.hpMax).toFixed(0)} %) · ${r.time.toFixed(1)} s`;
   });
   [...rows].forEach((el, i) => el.classList.toggle('best', i === best));
+
+  const names = ids => ids.map(id => DB[id] && DB[id].n).filter(Boolean).join(', ') || 'aucun';
+  $('itemsSum').textContent = `· toi : ${names(state.yi.items)} · lui : ${names(t.items)}`;
 
   // résumé
   const a0 = autosToKill(c, t, [], DB, champ), a1 = autosToKill(c, t, ['E'], DB, champ), a2 = autosToKill(c, t, ['Q', 'E'], DB, champ);
@@ -198,7 +207,7 @@ document.addEventListener('click', e => {
     if (d.champ !== state.tg.id) { state.tg.id = d.champ; state.tg.items = []; state.tg.shield = 0; state.tg.extraHp = 0; state.tg.extraArmor = 0; }
     if (GAME) state.liveTarget = d.champ;
     state.recents = [d.champ].concat(state.recents.filter(x => x !== d.champ)).slice(0, 6);
-    $('csearch').value = ''; renderChamps();
+    $('csearch').value = ''; renderChamps(); if (window.live) $('pickBox').open = false;
   }
   else if (d.hp) state.tg.hpPct = +d.hp;
   else if (d.item || d.rm != null) {
@@ -238,5 +247,7 @@ window.addEventListener('resize', () => setTab(state.tab));
 // pétales : quelques-uns seulement, pour l'ambiance du poster
 $('petals').innerHTML = Array.from({ length: 9 }, (_, i) => `<i style="left:${8 + i * 11}%;animation-duration:${13 + (i * 7) % 11}s;animation-delay:-${(i * 5) % 13}s;transform:scale(${0.7 + (i % 3) * 0.3})"></i>`).join('');
 
+// Dans l'application de bureau, le jeu remplit tout : les sélecteurs sont repliés. Sur le site, ils restent ouverts.
+$('pickBox').open = !window.live; $('itemsBox').open = !window.live;
 buildPresets(); renderStatic(); setTab(state.tab === 'labo' ? 'labo' : 'game'); render(); refreshLive();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setTab(state.tab));

@@ -34,7 +34,7 @@ function poll() {
 
 function createWindow() {
   win = new BrowserWindow({
-    width: 1280, height: 900, minWidth: 420, minHeight: 600,
+    width: 1280, height: 980, minWidth: 420, minHeight: 600,
     backgroundColor: '#0b0914', autoHideMenuBar: true, title: 'Wuju Calc',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true }
   });

@@ -26,13 +26,16 @@
 
   <!-- ============ EN GAME ============ -->
   <div class="panel" id="panel-game" role="tabpanel">
-    <div class="grid">
+    <div class="grid game">
       <div class="col">
-        <section class="card">
+        <section class="card sit">
           <h2>La situation</h2>
           <div class="results" id="recents"></div>
-          <input type="search" id="csearch" placeholder="Chercher l'adversaire (ex. Syndra, Zed…)" autocomplete="off" style="margin-top:8px">
-          <div class="champs" id="champs"></div>
+          <details class="fold" id="pickBox">
+            <summary>Changer d'adversaire</summary>
+            <input type="search" id="csearch" placeholder="Chercher (ex. Syndra, Zed…)" autocomplete="off">
+            <div class="champs" id="champs"></div>
+          </details>
           <h3>Niveaux</h3>
           <div class="row">
             <span class="grp"><span class="lbl">Toi</span><div class="step"><button data-step="yi.level:-1" aria-label="Ton niveau moins">−</button><output id="yiLevel"></output><button data-step="yi.level:1" aria-label="Ton niveau plus">+</button></div></span>
@@ -43,27 +46,30 @@
             <input type="range" id="hpPct" min="1" max="100" aria-label="PV actuels en pourcentage">
             <div class="hpval" id="hpVal"></div>
           </div>
-          <div class="row" style="margin-top:6px">
+          <div class="row tight" style="margin-top:6px">
             <button class="btn" data-hp="100">100 %</button><button class="btn" data-hp="75">75 %</button><button class="btn" data-hp="50">50 %</button><button class="btn" data-hp="33">33 %</button><button class="btn" data-hp="25">25 %</button>
-            <span class="grp"><span class="lbl">PV exacts</span><input type="number" id="hpAbs" min="1" inputmode="numeric" aria-label="PV actuels exacts"></span>
+            <input type="number" id="hpAbs" min="1" inputmode="numeric" aria-label="PV actuels exacts" title="PV exacts">
           </div>
-          <h3>Tes objets</h3>
-          <div class="results" id="yiQuick"></div>
-          <div class="picked" id="yiItems"></div>
-          <input type="search" id="yiSearch" placeholder="Ajouter un autre objet…" autocomplete="off">
-          <div class="results" id="yiResults"></div>
-          <h3>Ses objets</h3>
-          <div class="results" id="tgQuick"></div>
-          <div class="picked" id="tgItems"></div>
-          <input type="search" id="tgSearch" placeholder="Ajouter un autre objet…" autocomplete="off">
-          <div class="results" id="tgResults"></div>
           <h3>Options</h3>
-          <div class="row">
-            <label class="tog"><input type="checkbox" id="bone"> Il a Plaque d'os</label>
-            <label class="tog"><input type="checkbox" id="ignite"> J'ai Embrasement</label>
-            <label class="tog"><input type="checkbox" id="qIso"> Q sur lui seul (4 coups)</label>
-            <label class="tog"><input type="checkbox" id="r"> Ultime actif</label>
+          <div class="opts">
+            <label class="opt"><input type="checkbox" id="bone"><span>Il a Plaque d'os</span></label>
+            <label class="opt"><input type="checkbox" id="ignite"><span>Embrasement prêt</span></label>
+            <label class="opt"><input type="checkbox" id="qIso"><span>Q sur lui seul</span></label>
+            <label class="opt"><input type="checkbox" id="r"><span>Ultime actif</span></label>
           </div>
+          <details class="fold" id="itemsBox">
+            <summary>Objets <span id="itemsSum"></span></summary>
+            <h3>Les tiens</h3>
+            <div class="results" id="yiQuick"></div>
+            <div class="picked" id="yiItems"></div>
+            <input type="search" id="yiSearch" placeholder="Ajouter un autre objet…" autocomplete="off">
+            <div class="results" id="yiResults"></div>
+            <h3>Les siens</h3>
+            <div class="results" id="tgQuick"></div>
+            <div class="picked" id="tgItems"></div>
+            <input type="search" id="tgSearch" placeholder="Ajouter un autre objet…" autocomplete="off">
+            <div class="results" id="tgResults"></div>
+          </details>
         </section>
       </div>
       <div class="col right">
@@ -73,9 +79,9 @@
           <div class="vsub" id="vsub"></div>
         </section></div>
         <section class="card">
-          <h2>Tes combos de base</h2>
+          <div class="cardhead"><h2>Tes combos de base</h2>
+            <div class="legend"><span style="--c:var(--phys)">Physique</span><span style="--c:var(--magic)">Magique</span><span style="--c:var(--true)">Brut</span><span style="--c:rgba(0,0,0,.6)">Barre pleine = ses PV actuels</span></div></div>
           <div id="presets"></div>
-          <div class="legend"><span style="--c:var(--phys)">Physique</span><span style="--c:var(--magic)">Magique</span><span style="--c:var(--true)">Brut</span><span style="--c:rgba(0,0,0,.6)">Barre pleine = ses PV actuels</span></div>
         </section>
       </div>
     </div>
