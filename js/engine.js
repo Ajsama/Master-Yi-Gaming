@@ -54,7 +54,10 @@ function yiStats(cfg, DB) {
 
 function targetStats(t, DB, champ) {
   const it = sumItems(t.items, DB);
-  const hpMax = stat(champ[2], champ[3], t.level) + it.hp + (t.extraHp || 0);
+  // Fragments de runes : +65 PV fixes et/ou 10 à 180 PV selon le niveau. Le jeu ne dit pas lesquels il a pris.
+  const sh = t.hpShard || 'none';
+  const shardHp = (sh === 'flat' || sh === 'both' ? 65 : 0) + (sh === 'scale' || sh === 'both' ? lin(10, 180, t.level) : 0);
+  const hpMax = stat(champ[2], champ[3], t.level) + it.hp + shardHp + (t.extraHp || 0);
   const armor = stat(champ[4], champ[5], t.level) + it.ar + (t.extraArmor || 0);
   const mr = stat(champ[6], champ[7], t.level) + it.mr;
   return { hpMax, armor, mr, it };

@@ -33,4 +33,8 @@ near(r.steps.filter(s => s.kind === 'A' && s.e).length, 4, 'E couvre 4 autos au 
 const k = E.autosToKill({ level: 5, items: ['1036', '1036'], qRank: 3, eRank: 1, patch: '16.23', qIso: true }, { level: 5, items: ['1056'], hpPct: 50 }, ['Q', 'E'], DB, sy);
 near(k.n, 4, 'autos pour tuer après Q + E');
 near(E.autosToKill({ level: 1, items: [], qRank: 1, eRank: 1 }, { level: 1, items: [], hpPct: 100 }, [], DB, fake).n, 14, 'autos seules sur 1000 PV');
+// Vérifié en jeu : Warwick niv. 4 avec le fragment de PV évolutif = 885 PV max, 43 d'armure
+r = sim({ level: 4, items: [] }, { level: 4, items: ['1042'], hpShard: 'scale' }, ['A'], ch('Warwick'));
+near(Math.abs(r.hpMax - 885) < 1.5 ? 885 : r.hpMax, 885, 'PV max Warwick niv. 4 avec fragment évolutif (à 1 PV près)'); near(r.armor, 43, 'armure Warwick niv. 4');
+near(sim({ level: 1, items: [] }, { level: 1, hpShard: 'both' }, ['A']).hpMax, 1000 + 65 + 10, 'les deux fragments de PV');
 console.log(fail ? fail + ' test(s) en échec' : 'Tous les tests passent'); process.exit(fail ? 1 : 0);

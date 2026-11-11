@@ -41,7 +41,7 @@ const KEY = 'wuju-calc-v2';
 let state = {
   tab: 'game', patch: defaultPatch(), patchSet: false, recents: ['Syndra', 'Zed', 'Ahri', 'Yasuo', 'Viktor'], liveOn: true, liveTarget: null,
   yi: { level: 5, qRank: 3, eRank: 1, items: ['1036', '1036'], shards: 2, rune: 'none', r: false, ignite: false, qIso: true, dsStacks: 0 },
-  tg: { id: 'Syndra', level: 5, items: ['1056'], hpPct: 60, bone: false, shield: 0, extraHp: 0, extraArmor: 0 },
+  tg: { id: 'Syndra', level: 5, items: ['1056'], hpPct: 60, hpShard: 'flat', bone: false, shield: 0, extraHp: 0, extraArmor: 0 },
   seq: ['E', 'Q', 'A', 'A', 'A']
 };
 try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.yi && s.tg && CH[s.tg.id]) {
@@ -124,7 +124,7 @@ function render() {
   if (document.activeElement !== $('hpAbs')) $('hpAbs').value = r0(hpNow);
   for (const k of ['shield', 'extraHp', 'extraArmor']) if (document.activeElement !== $(k)) $(k).value = t[k] || '';
   $('rune').value = state.yi.rune; $('ignite').checked = state.yi.ignite; $('r').checked = state.yi.r; $('qIso').checked = state.yi.qIso;
-  seg('patch', state.patch); seg('shards', state.yi.shards); seg('ds', state.yi.dsStacks);
+  seg('hpShard', t.hpShard || 'none'); seg('patch', state.patch); seg('shards', state.yi.shards); seg('ds', state.yi.dsStacks);
   $('dataver').textContent = `Données Riot ${VER} · ${LIVE ? 'à jour' : 'copie intégrée'} · Q à ${YI.qRatio[state.patch] * 100} % AD`;
 
   // combos de base
@@ -187,6 +187,7 @@ function render() {
     `Lame du roi déchu : 9 % des PV actuels. Tueur de krakens : 150 à 200 toutes les 3 attaques, jusqu'à +75 % selon les PV manquants. Guinsoo 30, Au bout du rouleau 45, Terminus 30, Arc courbe 15.`,
     `Plaque d'os : 30 à 60 de moins sur 3 impacts. Embrasement : 70 à 475 bruts selon ton niveau, comptés en entier.`,
     `Coups critiques : 200 % des dégâts, comptés en moyenne sur les autos seulement.`,
+    `PV adverses : base + objets + fragments de PV choisis (+65 fixes, ou 10 à 180 selon le niveau). Résistances : base + objets.`,
     `Non comptés : soins, potions, régénération, boucliers lancés pendant le combat (utilise le champ Bouclier), passifs défensifs des champions, résistances des runes.`
   ].map(x => `<li>${x}</li>`).join('');
   save();
@@ -223,6 +224,7 @@ document.addEventListener('click', e => {
     const g = b.parentElement.id;
     if (g === 'patch') { state.patch = d.v; state.patchSet = true; }
     else if (g === 'shards') state.yi.shards = +d.v;
+    else if (g === 'hpShard') state.tg.hpShard = d.v;
     else if (g === 'ds') state.yi.dsStacks = +d.v;
   } else return;
   render();
