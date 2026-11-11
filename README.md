@@ -30,6 +30,8 @@ npm install
 npm start
 ```
 
+Sous Windows, un double-clic sur `desktop/Wuju Calc.bat` fait la même chose (clic droit → Envoyer vers → Bureau pour créer un raccourci).
+
 Elle interroge une fois par seconde l'API locale officielle du jeu (`https://127.0.0.1:2999/liveclientdata/allgamedata`) et ne touche pas au processus du jeu. Hors partie, le site reste en saisie manuelle. `js/live.js` fait la traduction entre la réponse du jeu et l'état du site.
 
 ## Commandes
