@@ -1,0 +1,277 @@
+{
+	"activePlayer": {
+		"abilities": {
+			"E": {
+				"abilityLevel": 1,
+				"displayName": "Style Wuju",
+				"id": "WujuStyle",
+				"rawDescription": "GeneratedTip_Spell_WujuStyle_Description",
+				"rawDisplayName": "GeneratedTip_Spell_WujuStyle_DisplayName"
+			},
+			"Passive": {
+				"displayName": "Coup double",
+				"id": "MasterYiPassive",
+				"rawDescription": "GeneratedTip_Passive_MasterYiPassive_Description",
+				"rawDisplayName": "GeneratedTip_Passive_MasterYiPassive_DisplayName"
+			},
+			"Q": {
+				"abilityLevel": 1,
+				"displayName": "Assaut éclair",
+				"id": "AlphaStrike",
+				"rawDescription": "GeneratedTip_Spell_AlphaStrike_Description",
+				"rawDisplayName": "GeneratedTip_Spell_AlphaStrike_DisplayName"
+			},
+			"R": {
+				"abilityLevel": 0,
+				"displayName": "Highlander",
+				"id": "Highlander",
+				"rawDescription": "GeneratedTip_Spell_Highlander_Description",
+				"rawDisplayName": "GeneratedTip_Spell_Highlander_DisplayName"
+			},
+			"W": {
+				"abilityLevel": 1,
+				"displayName": "Méditation",
+				"id": "Meditate",
+				"rawDescription": "GeneratedTip_Spell_Meditate_Description",
+				"rawDisplayName": "GeneratedTip_Spell_Meditate_DisplayName"
+			}
+		},
+		"championStats": {
+			"abilityHaste": 0.0,
+			"abilityPower": 0.0,
+			"armor": 48.45000076293945,
+			"armorPenetrationFlat": 0.0,
+			"armorPenetrationPercent": 1.0,
+			"attackDamage": 133.125,
+			"attackRange": 175.0,
+			"attackSpeed": 1.0913227796554566,
+			"bonusArmorPenetrationPercent": 1.0,
+			"bonusMagicPenetrationPercent": 1.0,
+			"critChance": 0.0,
+			"critDamage": 200.0,
+			"currentHealth": 1109.449951171875,
+			"healShieldPower": 0.0,
+			"healthRegenRate": 1.9017000198364258,
+			"lifeSteal": 0.0,
+			"magicLethality": 0.0,
+			"magicPenetrationFlat": 0.0,
+			"magicPenetrationPercent": 1.0,
+			"magicResist": 38.33449935913086,
+			"maxHealth": 1109.449951171875,
+			"moveSpeed": 369.1999816894531,
+			"omnivamp": 0.02500000037252903,
+			"physicalLethality": 0.0,
+			"physicalVamp": 0.0,
+			"resourceMax": 380.7799987792969,
+			"resourceRegenRate": 1.728100061416626,
+			"resourceType": "MANA",
+			"resourceValue": 380.7799987792969,
+			"spellVamp": 0.0,
+			"tenacity": 5.0
+		},
+		"currentGold": 8879.8095703125,
+		"fullRunes": {
+			"generalRunes": [
+				{
+					"displayName": "Déluge de lames",
+					"id": 9923,
+					"rawDescription": "perk_tooltip_HailOfBlades",
+					"rawDisplayName": "perk_displayname_HailOfBlades"
+				},
+				{
+					"displayName": "Ruée offensive",
+					"id": 8143,
+					"rawDescription": "perk_tooltip_SuddenImpact",
+					"rawDisplayName": "perk_displayname_SuddenImpact"
+				},
+				{
+					"displayName": "Souvenirs épouvantables",
+					"id": 8140,
+					"rawDescription": "perk_tooltip_GrislyMementos",
+					"rawDisplayName": "perk_displayname_GrislyMementos"
+				},
+				{
+					"displayName": "Chasseur de trésors",
+					"id": 8135,
+					"rawDescription": "perk_tooltip_TreasureHunter",
+					"rawDisplayName": "perk_displayname_TreasureHunter"
+				},
+				{
+					"displayName": "Triomphe",
+					"id": 9111,
+					"rawDescription": "perk_tooltip_9111",
+					"rawDisplayName": "perk_displayname_9111"
+				},
+				{
+					"displayName": "Légende : alacrité",
+					"id": 9104,
+					"rawDescription": "perk_tooltip_9104",
+					"rawDisplayName": "perk_displayname_9104"
+				}
+			],
+			"keystone": {
+				"displayName": "Déluge de lames",
+				"id": 9923,
+				"rawDescription": "perk_tooltip_HailOfBlades",
+				"rawDisplayName": "perk_displayname_HailOfBlades"
+			},
+			"primaryRuneTree": {
+				"displayName": "Domination",
+				"id": 8100,
+				"rawDescription": "perkstyle_tooltip_7200",
+				"rawDisplayName": "perkstyle_displayname_7200"
+			},
+			"secondaryRuneTree": {
+				"displayName": "Précision",
+				"id": 8000,
+				"rawDescription": "perkstyle_tooltip_7201",
+				"rawDisplayName": "perkstyle_displayname_7201"
+			},
+			"statRunes": [
+				{
+					"id": 5005,
+					"rawDescription": "perk_tooltip_StatModAttackSpeed"
+				},
+				{
+					"id": 5008,
+					"rawDescription": "perk_tooltip_StatModAdaptive"
+				},
+				{
+					"id": 5011,
+					"rawDescription": "perk_tooltip_StatModHealth"
+				}
+			]
+		},
+		"level": 5,
+		"riotId": "Ajsama#Sama",
+		"riotIdGameName": "Ajsama",
+		"riotIdTagLine": "Sama",
+		"summonerName": "Ajsama#Sama",
+		"teamRelativeColors": true
+	},
+	"allPlayers": [
+		{
+			"championName": "Maître Yi",
+			"isBot": false,
+			"isDead": false,
+			"items": [
+				{
+					"canUse": false,
+					"consumable": false,
+					"count": 1,
+					"displayName": "Lame de Doran",
+					"itemID": 1055,
+					"price": 450,
+					"rawDescription": "GeneratedTip_Item_1055_Description",
+					"rawDisplayName": "Item_1055_Name",
+					"slot": 0
+				},
+				{
+					"canUse": true,
+					"consumable": true,
+					"count": 1,
+					"displayName": "Potion de soin",
+					"itemID": 2003,
+					"price": 50,
+					"rawDescription": "GeneratedTip_Item_2003_Description",
+					"rawDisplayName": "Item_2003_Name",
+					"slot": 1
+				},
+				{
+					"canUse": false,
+					"consumable": false,
+					"count": 1,
+					"displayName": "Tueur de krakens",
+					"itemID": 6672,
+					"price": 325,
+					"rawDescription": "GeneratedTip_Item_6672_Description",
+					"rawDisplayName": "Item_6672_Name",
+					"slot": 2
+				},
+				{
+					"canUse": true,
+					"consumable": false,
+					"count": 1,
+					"displayName": "Balise camouflée",
+					"itemID": 3340,
+					"price": 0,
+					"rawDescription": "GeneratedTip_Item_3340_Description",
+					"rawDisplayName": "Item_3340_Name",
+					"slot": 6
+				}
+			],
+			"level": 5,
+			"position": "NONE",
+			"rawChampionName": "game_character_displayname_MasterYi",
+			"rawSkinName": "game_character_skin_displayname_MasterYi_53",
+			"respawnTimer": 0.0,
+			"riotId": "Ajsama#Sama",
+			"riotIdGameName": "Ajsama",
+			"riotIdTagLine": "Sama",
+			"runes": {
+				"keystone": {
+					"displayName": "Déluge de lames",
+					"id": 9923,
+					"rawDescription": "perk_tooltip_HailOfBlades",
+					"rawDisplayName": "perk_displayname_HailOfBlades"
+				},
+				"primaryRuneTree": {
+					"displayName": "Domination",
+					"id": 8100,
+					"rawDescription": "perkstyle_tooltip_7200",
+					"rawDisplayName": "perkstyle_displayname_7200"
+				},
+				"secondaryRuneTree": {
+					"displayName": "Précision",
+					"id": 8000,
+					"rawDescription": "perkstyle_tooltip_7201",
+					"rawDisplayName": "perkstyle_displayname_7201"
+				}
+			},
+			"scores": {
+				"assists": 0,
+				"creepScore": 0,
+				"deaths": 0,
+				"kills": 0,
+				"wardScore": 0.0
+			},
+			"skinID": 53,
+			"skinName": "Maître Yi fleur spirituelle prestige",
+			"summonerName": "Ajsama#Sama",
+			"summonerSpells": {
+				"summonerSpellOne": {
+					"displayName": "Embrasement",
+					"rawDescription": "GeneratedTip_SummonerSpell_SummonerDot_Description",
+					"rawDisplayName": "GeneratedTip_SummonerSpell_SummonerDot_DisplayName"
+				},
+				"summonerSpellTwo": {
+					"displayName": "Saut éclair",
+					"rawDescription": "GeneratedTip_SummonerSpell_SummonerFlash_Description",
+					"rawDisplayName": "GeneratedTip_SummonerSpell_SummonerFlash_DisplayName"
+				}
+			},
+			"team": "ORDER"
+		}
+	],
+	"events": {
+		"Events": [
+			{
+				"EventID": 0,
+				"EventName": "GameStart",
+				"EventTime": 0.03490310162305832
+			},
+			{
+				"EventID": 1,
+				"EventName": "MinionsSpawning",
+				"EventTime": 30.04564094543457
+			}
+		]
+	},
+	"gameData": {
+		"gameMode": "PRACTICETOOL",
+		"gameTime": 942.13916015625,
+		"mapName": "Map11",
+		"mapNumber": 11,
+		"mapTerrain": "Default"
+	}
+}

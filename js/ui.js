@@ -71,7 +71,7 @@ function champBtn(c) { return `<button class="chip${c[0] === state.tg.id ? ' on'
 function renderChamps() {
   const q = norm($('csearch').value.trim());
   $('champs').innerHTML = DATA.c.filter(c => c[0] !== 'MasterYi' && (!q || norm(c[1]).includes(q) || norm(c[0]).includes(q))).map(champBtn).join('');
-  const quick = GAME && state.liveOn ? GAME.enemies.map(e => e.id) : state.recents;   // en partie : l'équipe adverse
+  const quick = GAME && state.liveOn && GAME.enemies.length ? GAME.enemies.map(e => e.id) : state.recents;   // en partie : l'équipe adverse
   $('recents').innerHTML = quick.filter(id => CH[id]).map(id => champBtn(CH[id])).join('');
 }
 function itemBtn(id) { const it = DB[id]; return it ? `<button class="chip" data-item="${id}" title="${it.g} PO">${IMG(iimg(id))}${esc(it.n)}</button>` : ''; }
@@ -177,7 +177,7 @@ function render() {
     `Yi : 65 AD + 2,5 par niveau. Fragment de force adaptative : 5,4 AD.`,
     `Lame du roi déchu : 9 % des PV actuels. Tueur de krakens : 150 à 200 toutes les 3 attaques, jusqu'à +75 % selon les PV manquants. Guinsoo 30, Au bout du rouleau 45, Terminus 30, Arc courbe 15.`,
     `Plaque d'os : 30 à 60 de moins sur 3 impacts. Embrasement : 70 à 475 bruts selon ton niveau, comptés en entier.`,
-    `Coups critiques : comptés en moyenne sur les autos seulement.`,
+    `Coups critiques : 200 % des dégâts, comptés en moyenne sur les autos seulement.`,
     `Non comptés : soins, potions, régénération, boucliers lancés pendant le combat (utilise le champ Bouclier), passifs défensifs des champions, résistances des runes.`
   ].map(x => `<li>${x}</li>`).join('');
   save();

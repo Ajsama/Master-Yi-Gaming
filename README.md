@@ -35,7 +35,8 @@ Elle interroge une fois par seconde l'API locale officielle du jeu (`https://127
 ## Commandes
 
 ```
-node tests/engine.test.js     # lance les tests
+node tests/engine.test.js     # tests du moteur de calcul
+node tests/live.test.js       # tests de la lecture des données du jeu
 node tools/update-data.js     # met à jour la copie de secours des données
 ```
 

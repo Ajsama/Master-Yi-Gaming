@@ -28,7 +28,8 @@ function readGame(d) {
     ranks: { Q: rank('Q'), W: rank('W'), E: rank('E'), R: rank('R') },
     rune: KEYSTONES[ap.fullRunes && ap.fullRunes.keystone && ap.fullRunes.keystone.id] || 'none',
     stats: { ad: cs.attackDamage || 0, as: cs.attackSpeed || YI.as, leth: cs.physicalLethality || 0,
-             pen: pen > 0 && pen <= 1 ? pen : 1, crit: cs.critChance || 0 },
+             pen: pen > 0 && pen <= 1 ? pen : 1, crit: cs.critChance || 0, critDmg: cs.critDamage || 0 },
+    ignite: Object.values(me.summonerSpells || {}).some(s => /SummonerDot/.test((s && s.rawDisplayName) || '')),
     enemies
   };
 }
@@ -39,10 +40,12 @@ function applyGame(d) {
   if (!g) { setLiveStatus('loading'); return; }
   const sig = JSON.stringify(g);
   if (sig === lastSig && liveStatus === 'game') return;      // rien n'a changé : on ne touche pas à l'écran
+  const newGame = !GAME;
   lastSig = sig; GAME = g; setLiveStatus('game');
   if (!state.liveOn || !g.isYi) { renderLiveBox(); renderChamps(); render(); return; }
 
   const y = state.yi, t = state.tg;
+  if (newGame) { y.ignite = g.ignite; state.liveTarget = null; }   // une fois par partie : ensuite tu décoches quand il est en recharge
   y.level = clamp(g.level, 1, 18); y.items = g.items; y.rune = g.rune;
   y.qRank = clamp(g.ranks.Q, 1, 5); y.eRank = clamp(g.ranks.E, 1, 5);
   // cible : celle que tu as choisie si elle est dans la partie, sinon ton vis-à-vis de lane

@@ -7,6 +7,7 @@ const YI = {
   qOnHit: 0.65, qOnHitSame: 0.1625,
   eBase: [20, 25, 30, 35, 40], eRatio: 0.35, eDur: 5,
   dsRatio: 0.5,
+  critBonus: 1.0,           // un coup critique fait 200 % (valeur lue dans le jeu, patch 16.22)
   rAS: [25, 45, 65],
   qTime: 1.0
 };
@@ -45,6 +46,7 @@ function yiStats(cfg, DB) {
     const L = cfg.live;
     const out = { baseAD, bonusAD: Math.max(0, L.ad - baseAD), asBonus: (L.as / YI.as - 1) * 100, it };
     it.le = L.leth; it.pen = L.pen; it.cr = Math.min(100, L.crit * 100);
+    if (L.critDmg) { out.critBonus = L.critDmg / 100 - 1; it.cd = 0; }     // bonus des objets déjà inclus
     return out;
   }
   return { baseAD, bonusAD, asBonus, it };
@@ -66,7 +68,7 @@ function simulate(cfg, tgt, seq, DB, champ, opt) {
   const qRank = Math.max(1, cfg.qRank), eRank = Math.max(1, cfg.eRank);
   const armorEff = T.armor > 0 ? Math.max(0, T.armor * y.it.pen - y.it.le) : T.armor;
   const pm = 100 / (100 + armorEff), mm = 100 / (100 + Math.max(0, T.mr));
-  const critMult = 1 + (y.it.cr / 100) * (0.75 + y.it.cd / 100);
+  const critMult = 1 + (y.it.cr / 100) * ((y.critBonus != null ? y.critBonus : YI.critBonus) + y.it.cd / 100);
   const boneRed = tgt.bone ? lin(30, 60, tgt.level) : 0;
   const startHp = opt.hp != null ? opt.hp : T.hpMax * (tgt.hpPct / 100) + (tgt.shield || 0);
 
