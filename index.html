@@ -4,218 +4,276 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wuju Calc</title>
+<link rel="icon" href="assets/logo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Idée de mise en page : le verdict reste collé en haut, tout le reste sert à le régler.
-   Un seul thème sombre, pensé pour un second écran à côté du jeu. */
+/* Mise en page : le poster d'Ajsama sert de décor fixe, les panneaux en verre fumé passent devant.
+   Onglet « En game » = tout est déjà calculé. Onglet « Labo » = réglages fins et combo sur mesure.
+   Un seul thème, nocturne, tiré des violets et du bleu de la lame du poster. */
 :root{
   color-scheme:dark;
-  --bg:#12141c; --panel:#1a1d29; --panel2:#222637; --line:#2d3247;
-  --text:#ece7da; --muted:#9296a8;
-  --brass:#e2b65c;
-  --phys:#f28c3a; --magic:#6fb7ff; --true:#f4f4f6;
-  --kill:#ff5d4f; --safe:#58c4a1;
-  --display:"Chakra Petch","Arial Narrow",system-ui,sans-serif;
-  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --bg:#0b0914; --glass:rgba(22,17,40,.80); --glass2:rgba(40,31,70,.62); --line:rgba(160,130,255,.20);
+  --text:#efeaf9; --muted:#a39bc0;
+  --violet:#a878ff; --blade:#7fd0ff; --petal:#ff6fb1;
+  --phys:#ff9a4a; --magic:#7fd0ff; --true:#f6f4ff;
+  --kill:#ff6fb1; --safe:#8f86ad;
+  --display:"Cinzel","Trajan Pro",Georgia,serif;
+  --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;z-index:-2;background:url(assets/ajsama-master-yi.jpg) center 34%/cover no-repeat}
+body::after{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(11,9,20,.38) 0,rgba(11,9,20,.80) 240px,rgba(11,9,20,.90) 100%)}
 button,input,select{font:inherit;color:inherit}
-.wrap{max-width:1180px;margin:0 auto;padding:0 16px 56px}
-header.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding:16px 0 12px}
-h1{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:.02em;margin:0;text-transform:uppercase}
-h1 span{color:var(--brass)}
-.dataver{color:var(--muted);font-size:12.5px;margin-left:auto}
-h2{font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.09em;text-transform:uppercase;margin:0 0 12px;color:var(--brass)}
-h3{font-size:12.5px;font-weight:600;color:var(--muted);margin:14px 0 6px;letter-spacing:.02em}
-.num{font-family:var(--display);font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px 64px}
+.num{font-family:var(--display);font-variant-numeric:lining-nums tabular-nums}
 
-/* Verdict */
-.verdict{position:sticky;top:0;z-index:5;background:linear-gradient(var(--bg) 88%,transparent);padding:6px 0 14px}
-.vcard{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--muted);border-radius:10px;padding:12px 16px 14px;display:grid;grid-template-columns:auto 1fr auto;gap:4px 16px;align-items:center}
-.vcard.kill{border-left-color:var(--kill)} .vcard.safe{border-left-color:var(--safe)}
-.vicon{width:52px;height:52px;border-radius:8px;background:var(--panel2);object-fit:cover;grid-row:span 2}
-.vwho{font-weight:600} .vwho small{color:var(--muted);font-weight:500}
-.vword{font-family:var(--display);font-weight:700;font-size:34px;line-height:1;letter-spacing:.03em;text-transform:uppercase;grid-row:span 2;text-align:right}
-.kill .vword{color:var(--kill)} .safe .vword{color:var(--safe)}
-.vsub{color:var(--muted);font-size:13.5px}
-.vsub b{color:var(--text);font-weight:600}
-.hpbar{grid-column:1/-1;height:18px;border-radius:5px;background:#0c0d13;border:1px solid var(--line);display:flex;overflow:hidden;margin-top:8px}
-.hpbar i{display:block;height:100%}
-.hpbar .left{background:#3f8f5a} .hpbar .p{background:var(--phys)} .hpbar .m{background:var(--magic)} .hpbar .t{background:var(--true)}
-.legend{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);margin-top:6px}
-.legend span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;background:var(--c)}
+/* Pétales du poster */
+.petals{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.petals i{position:absolute;top:-24px;width:12px;height:7px;border-radius:80% 10% 80% 10%;background:var(--petal);opacity:.55;animation:fall linear infinite}
+@keyframes fall{to{transform:translate3d(-90px,110vh,0) rotate(540deg)}}
 
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
-.col{display:grid;gap:16px}
-@media(max-width:600px){.vcard{grid-template-columns:auto 1fr}.vword{grid-column:1/-1;grid-row:auto;text-align:left;order:-1;font-size:28px}.vicon{grid-row:auto;width:40px;height:40px}.vsub{grid-column:1/-1}}
-@media(max-width:860px){.grid{grid-template-columns:1fr}.vword{font-size:26px}.vicon{width:44px;height:44px}}
-section.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+/* En-tête */
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px 20px;padding:26px 0 18px}
+.logo{width:64px;height:64px;border-radius:50%;object-fit:cover;border:1px solid var(--violet);box-shadow:0 0 24px rgba(168,120,255,.55)}
+.brand small{display:block;font-family:var(--display);font-size:11.5px;letter-spacing:.34em;color:var(--blade);text-transform:uppercase}
+h1{font-family:var(--display);font-weight:700;font-size:32px;letter-spacing:.08em;margin:2px 0 0;text-transform:uppercase;line-height:1.05;text-shadow:0 2px 18px rgba(0,0,0,.7)}
+.tabs{display:flex;gap:4px;margin-left:auto;position:relative}
+.tabs button{background:none;border:0;padding:10px 16px;cursor:pointer;font-family:var(--display);font-weight:600;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid transparent;transition:color .2s}
+.tabs button[aria-selected=true]{color:var(--text)}
+.tabs .ink{position:absolute;bottom:0;height:2px;background:linear-gradient(90deg,var(--violet),var(--blade));box-shadow:0 0 12px var(--violet);transition:left .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1)}
+.dataver{width:100%;color:var(--muted);font-size:12px;text-align:right;margin-top:-6px}
+
+h2{font-family:var(--display);font-weight:600;font-size:14px;letter-spacing:.18em;text-transform:uppercase;margin:0 0 14px;color:var(--blade)}
+h3{font-size:12.5px;font-weight:700;color:var(--muted);margin:16px 0 7px;letter-spacing:.02em}
+section.card{background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:18px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px;align-items:start}
+.col{display:grid;gap:16px;min-width:0}
+@media(max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}h1{font-size:25px}.logo{width:52px;height:52px}.tabs{margin-left:0;width:100%}.tabs button{flex:1}}
+.panel{display:none}
+.panel.on{display:block;animation:rise .35s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
 
 /* Contrôles */
-.row{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
-.seg button{background:transparent;border:0;padding:6px 11px;cursor:pointer;color:var(--muted);font-weight:600;font-size:13.5px}
-.seg button+button{border-left:1px solid var(--line)}
-.seg button[aria-pressed=true]{background:var(--brass);color:#1a1405}
-.step{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:7px;overflow:hidden}
-.step button{background:var(--panel2);border:0;width:34px;height:34px;cursor:pointer;font-size:18px;font-weight:600}
-.step button:hover{background:#2c3148}
-.step output{min-width:40px;text-align:center;font-family:var(--display);font-weight:700;font-size:18px}
+.row{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
 .grp{display:inline-flex;align-items:center;gap:8px}
 .lbl{font-size:13px;color:var(--muted);font-weight:600}
-.chip,.btn{background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:6px 10px;cursor:pointer;font-size:13.5px;font-weight:500;display:inline-flex;align-items:center;gap:6px}
-.chip:hover,.btn:hover{border-color:var(--brass)}
-.chip img{width:20px;height:20px;border-radius:3px}
-.chip.on{border-color:var(--brass);background:#3a3222}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{background:transparent;border:0;padding:6px 11px;cursor:pointer;color:var(--muted);font-weight:700;font-size:13px;transition:background .2s,color .2s}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed=true]{background:var(--violet);color:#150a2e}
+.step{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:rgba(0,0,0,.25)}
+.step button{background:var(--glass2);border:0;width:34px;height:34px;cursor:pointer;font-size:18px;font-weight:700;transition:background .15s}
+.step button:hover{background:rgba(168,120,255,.35)}
+.step button:active{transform:scale(.92)}
+.step output{min-width:40px;text-align:center;font-family:var(--display);font-weight:700;font-size:18px}
+.chip,.btn{background:var(--glass2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:13.5px;font-weight:500;display:inline-flex;align-items:center;gap:6px;transition:border-color .15s,transform .15s,background .15s}
+.chip:hover,.btn:hover{border-color:var(--violet);transform:translateY(-1px)}
+.chip:active,.btn:active{transform:scale(.96)}
+.chip img{width:20px;height:20px;border-radius:4px}
+.chip.on{border-color:var(--violet);background:rgba(168,120,255,.26)}
 .chip .x{color:var(--muted);font-weight:700}
 .tog{display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-size:13.5px;font-weight:500}
-.tog input{width:17px;height:17px;accent-color:var(--brass)}
-input[type=search],input[type=number],select{background:#0f1118;border:1px solid var(--line);border-radius:7px;padding:8px 10px;min-width:0}
+.tog input{width:17px;height:17px;accent-color:var(--violet)}
+input[type=search],input[type=number],select{background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
 input[type=search]{width:100%}
 input[type=number]{width:84px}
 input[type=range]{width:100%;accent-color:var(--kill)}
-:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+:focus-visible{outline:2px solid var(--blade);outline-offset:2px}
 .picked{display:flex;flex-wrap:wrap;gap:6px;min-height:34px;margin:6px 0}
 .picked:empty::before{content:"Aucun objet";color:var(--muted);font-size:13px;align-self:center}
 .results{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.champs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:6px;max-height:176px;overflow-y:auto;margin-top:8px;padding-right:4px}
+.champs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:6px;max-height:122px;overflow-y:auto;margin-top:8px;padding-right:4px}
 .champs .chip{justify-content:flex-start;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hpline{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
-.hpval{font-family:var(--display);font-weight:700;font-size:20px;min-width:118px;text-align:right}
-.hpval small{color:var(--muted);font-weight:500;font-size:13px}
+.hpval{font-family:var(--display);font-weight:700;font-size:21px;min-width:128px;text-align:right}
+.hpval small{color:var(--muted);font-weight:500;font-size:13px;font-family:var(--body)}
 
-/* Combo */
-.seq{display:flex;flex-wrap:wrap;gap:6px;min-height:40px;padding:8px;border:1px dashed var(--line);border-radius:8px;margin-bottom:10px}
+/* Résumé */
+.sum{position:sticky;top:8px;z-index:5}
+.sum .card{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center;border-color:rgba(168,120,255,.45);background:rgba(18,13,34,.93)}
+.sum.kill .card{border-color:var(--kill);box-shadow:0 0 0 1px var(--kill),0 0 34px rgba(255,111,177,.32)}
+.vicon{width:54px;height:54px;border-radius:10px;background:var(--glass2);object-fit:cover}
+.vwho{font-weight:700} .vwho small{color:var(--muted);font-weight:500}
+.vword{font-family:var(--display);font-weight:700;font-size:23px;letter-spacing:.05em;line-height:1.15;text-transform:uppercase}
+.sum.kill .vword{color:var(--kill)} .vword.pop{animation:pop .45s ease}
+@keyframes pop{from{opacity:0;transform:translateY(6px) scale(.97);filter:blur(3px)}}
+.vsub{grid-column:1/-1;color:var(--muted);font-size:13.5px;margin-top:4px}
+.vsub b{color:var(--text)}
+
+/* Liste des combos */
+.combo{display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center;width:100%;text-align:left;background:var(--glass2);border:1px solid var(--line);border-left:4px solid var(--safe);border-radius:10px;padding:10px 12px;cursor:pointer;margin-top:8px;transition:border-color .25s,background .25s,transform .15s,box-shadow .25s;animation:rise .4s ease both;animation-delay:calc(var(--i)*45ms)}
+.combo:hover{transform:translateX(3px)}
+.combo.kill{border-left-color:var(--kill);background:rgba(255,111,177,.10)}
+.combo.best{box-shadow:0 0 0 1px var(--kill),0 0 22px rgba(255,111,177,.28)}
+.combo .name{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.03em}
+.keys{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.k{font-family:var(--display);font-weight:700;font-size:13px;min-width:26px;text-align:center;padding:2px 6px;border-radius:5px;border:1px solid var(--line);background:rgba(0,0,0,.3)}
+.k.Q{color:var(--phys);border-color:var(--phys)} .k.E{color:var(--true);border-color:var(--true)} .k.W{color:var(--blade);border-color:var(--blade)} .k.I{color:var(--petal);border-color:var(--petal)}
+.combo .res{text-align:right;font-weight:700;white-space:nowrap}
+.combo.kill .res{color:var(--kill);font-family:var(--display);letter-spacing:.08em;font-size:17px}
+.combo .res small{display:block;color:var(--muted);font-weight:500;font-size:12px;font-family:var(--body);letter-spacing:0}
+.bar{grid-column:1/-1;height:9px;border-radius:5px;background:rgba(0,0,0,.45);overflow:hidden;display:flex}
+.bar i{display:block;height:100%;transition:width .45s cubic-bezier(.3,.8,.3,1)}
+.bar .p{background:var(--phys)} .bar .m{background:var(--magic)} .bar .t{background:var(--true)}
+.combo .meta{grid-column:1/-1;font-size:12px;color:var(--muted)}
+.best-tag{display:none;color:var(--kill);font-weight:700}
+.combo.best .best-tag{display:inline}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);margin-top:12px}
+.legend span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;background:var(--c)}
+
+/* Labo */
+.seq{display:flex;flex-wrap:wrap;gap:6px;min-height:42px;padding:8px;border:1px dashed var(--line);border-radius:10px;margin-bottom:10px}
 .seq:empty::before{content:"Ajoute des actions ci-dessous";color:var(--muted);font-size:13px}
-.act{font-family:var(--display);font-weight:700;border-radius:6px;border:1px solid var(--line);background:var(--panel2);padding:5px 11px;cursor:pointer}
-.act.Q{border-color:var(--phys);color:var(--phys)} .act.E{border-color:var(--true)} .act.A{color:var(--text)}
+.act{font-family:var(--display);font-weight:700;border-radius:7px;border:1px solid var(--line);background:var(--glass2);padding:5px 11px;cursor:pointer;transition:transform .15s}
+.act:active{transform:scale(.93)}
+.act.Q{border-color:var(--phys);color:var(--phys)} .act.E{border-color:var(--true)} .act.W{border-color:var(--blade);color:var(--blade)}
+.tablewrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:12px}
-th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;text-align:right;padding:4px 6px}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;text-align:right;padding:4px 6px}
 th:first-child,td:first-child{text-align:left}
 td{padding:6px;border-top:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
 td .p{color:var(--phys)} td .m{color:var(--magic)} td .t{color:var(--true)}
-tr.dead td{background:rgba(255,93,79,.12)} tr.dead td:last-child{color:var(--kill);font-weight:700}
+tr.dead td{background:rgba(255,111,177,.14)} tr.dead td:last-child{color:var(--kill);font-weight:700}
 tr.after td{opacity:.45}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:8px}
-.tile{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
-.tile .k{font-size:12px;color:var(--muted);font-weight:600}
-.tile .v{font-family:var(--display);font-weight:700;font-size:24px;line-height:1.15}
+.tile{background:var(--glass2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.tile .tk{font-size:12px;color:var(--muted);font-weight:700}
+.tile .v{font-family:var(--display);font-weight:700;font-size:24px;line-height:1.2}
 .tile .s{font-size:12px;color:var(--muted)}
-.warn{color:var(--brass);font-size:12.5px;margin-top:8px}
+.warn{color:var(--petal);font-size:12.5px;margin-top:8px}
 details{margin-top:16px;color:var(--muted);font-size:13px}
-details summary{cursor:pointer;font-weight:600;color:var(--text)}
-details ul{padding-left:18px;margin:8px 0}
-details li{margin:3px 0}
+details summary{cursor:pointer;font-weight:700;color:var(--text)}
+details ul{padding-left:18px;margin:8px 0} details li{margin:3px 0}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.petals{display:none}}
 </style>
 </head>
 <body>
+<div class="petals" aria-hidden="true" id="petals"></div>
 <div class="wrap">
   <header class="top">
-    <h1>Wuju <span>Calc</span></h1>
-    <div class="seg" id="patch" role="group" aria-label="Version du Q">
-      <button data-v="16.22">Q à 70 % AD</button><button data-v="16.23">Q à 60 % AD (nerf)</button>
+    <img class="logo" src="assets/logo.jpg" alt="">
+    <div class="brand"><small>Ajsama × Master Yi</small><h1>Wuju Calc</h1></div>
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="game" id="tab-game">En game</button>
+      <button role="tab" data-tab="labo" id="tab-labo">Labo</button>
+      <span class="ink" id="ink"></span>
     </div>
     <div class="dataver" id="dataver"></div>
   </header>
 
-  <div class="verdict" id="verdict"></div>
-
-  <div class="grid">
-    <div class="col">
-      <section class="card">
-        <h2>Adversaire</h2>
-        <input type="search" id="csearch" placeholder="Chercher un champion (ex. Syndra, Zed…)" autocomplete="off">
-        <div class="champs" id="champs"></div>
-        <h3>Son niveau et ses PV</h3>
-        <div class="row">
-          <span class="grp"><span class="lbl">Niveau</span><div class="step"><button data-step="tg.level:-1" aria-label="Niveau moins">−</button><output id="tgLevel"></output><button data-step="tg.level:1" aria-label="Niveau plus">+</button></div></span>
-          <label class="tog"><input type="checkbox" id="bone"> Plaque d'os active</label>
-        </div>
-        <div class="hpline" style="margin-top:10px">
-          <input type="range" id="hpPct" min="1" max="100" aria-label="PV actuels en pourcentage">
-          <div class="hpval" id="hpVal"></div>
-        </div>
-        <div class="row" style="margin-top:6px" id="hpQuick">
-          <button class="btn" data-hp="100">100 %</button><button class="btn" data-hp="75">75 %</button><button class="btn" data-hp="50">50 %</button><button class="btn" data-hp="33">33 %</button><button class="btn" data-hp="25">25 %</button>
-          <span class="lbl">ou PV exacts</span><input type="number" id="hpAbs" min="1" inputmode="numeric" aria-label="PV actuels exacts">
-        </div>
-        <h3>Ses objets (PV, armure)</h3>
-        <div class="results" id="tgQuick"></div>
-        <div class="picked" id="tgItems"></div>
-        <input type="search" id="tgSearch" placeholder="Ajouter un autre objet…" autocomplete="off">
-        <div class="results" id="tgResults"></div>
-        <h3>Ajustements manuels</h3>
-        <div class="row">
-          <label class="lbl">Bouclier <input type="number" id="shield" min="0" step="10"></label>
-          <label class="lbl">PV bonus <input type="number" id="extraHp" step="10"></label>
-          <label class="lbl">Armure bonus <input type="number" id="extraArmor" step="1"></label>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>Toi, Maître Yi</h2>
-        <div class="row">
-          <span class="grp"><span class="lbl">Niveau</span><div class="step"><button data-step="yi.level:-1" aria-label="Niveau moins">−</button><output id="yiLevel"></output><button data-step="yi.level:1" aria-label="Niveau plus">+</button></div></span>
-          <span class="grp"><span class="lbl">Rang Q</span><div class="step"><button data-step="yi.qRank:-1" aria-label="Rang Q moins">−</button><output id="qRank"></output><button data-step="yi.qRank:1" aria-label="Rang Q plus">+</button></div></span>
-          <span class="grp"><span class="lbl">Rang E</span><div class="step"><button data-step="yi.eRank:-1" aria-label="Rang E moins">−</button><output id="eRank"></output><button data-step="yi.eRank:1" aria-label="Rang E plus">+</button></div></span>
-        </div>
-        <div class="tiles" id="yiTiles" style="margin-top:12px"></div>
-        <h3>Tes objets</h3>
-        <div class="results" id="yiQuick"></div>
-        <div class="picked" id="yiItems"></div>
-        <input type="search" id="yiSearch" placeholder="Ajouter un autre objet…" autocomplete="off">
-        <div class="results" id="yiResults"></div>
-        <h3>Runes et sorts</h3>
-        <div class="row">
-          <label class="lbl">Rune clé
-            <select id="rune">
-              <option value="none">Non comptée</option><option value="lt">Tempo mortel</option><option value="conq">Conquérant</option>
-              <option value="pta">Attaque soutenue</option><option value="hob">Déluge de lames</option>
-            </select></label>
-          <span class="lbl">Fragments force adaptative</span>
-          <div class="seg" id="shards"><button data-v="0">0</button><button data-v="1">1</button><button data-v="2">2</button></div>
-        </div>
-        <div class="row" style="margin-top:10px">
-          <label class="tog"><input type="checkbox" id="ignite"> Embrasement</label>
-          <label class="tog"><input type="checkbox" id="r"> Ultime (R) actif</label>
-        </div>
-      </section>
+  <!-- ============ EN GAME ============ -->
+  <div class="panel" id="panel-game" role="tabpanel">
+    <div class="grid">
+      <div class="col">
+        <section class="card">
+          <h2>La situation</h2>
+          <div class="results" id="recents"></div>
+          <input type="search" id="csearch" placeholder="Chercher l'adversaire (ex. Syndra, Zed…)" autocomplete="off" style="margin-top:8px">
+          <div class="champs" id="champs"></div>
+          <h3>Niveaux</h3>
+          <div class="row">
+            <span class="grp"><span class="lbl">Toi</span><div class="step"><button data-step="yi.level:-1" aria-label="Ton niveau moins">−</button><output id="yiLevel"></output><button data-step="yi.level:1" aria-label="Ton niveau plus">+</button></div></span>
+            <span class="grp"><span class="lbl">Lui</span><div class="step"><button data-step="tg.level:-1" aria-label="Son niveau moins">−</button><output id="tgLevel"></output><button data-step="tg.level:1" aria-label="Son niveau plus">+</button></div></span>
+          </div>
+          <h3>Ses PV actuels</h3>
+          <div class="hpline">
+            <input type="range" id="hpPct" min="1" max="100" aria-label="PV actuels en pourcentage">
+            <div class="hpval" id="hpVal"></div>
+          </div>
+          <div class="row" style="margin-top:6px">
+            <button class="btn" data-hp="100">100 %</button><button class="btn" data-hp="75">75 %</button><button class="btn" data-hp="50">50 %</button><button class="btn" data-hp="33">33 %</button><button class="btn" data-hp="25">25 %</button>
+            <span class="grp"><span class="lbl">PV exacts</span><input type="number" id="hpAbs" min="1" inputmode="numeric" aria-label="PV actuels exacts"></span>
+          </div>
+          <h3>Tes objets</h3>
+          <div class="results" id="yiQuick"></div>
+          <div class="picked" id="yiItems"></div>
+          <input type="search" id="yiSearch" placeholder="Ajouter un autre objet…" autocomplete="off">
+          <div class="results" id="yiResults"></div>
+          <h3>Ses objets</h3>
+          <div class="results" id="tgQuick"></div>
+          <div class="picked" id="tgItems"></div>
+          <input type="search" id="tgSearch" placeholder="Ajouter un autre objet…" autocomplete="off">
+          <div class="results" id="tgResults"></div>
+          <h3>Options</h3>
+          <div class="row">
+            <label class="tog"><input type="checkbox" id="bone"> Il a Plaque d'os</label>
+            <label class="tog"><input type="checkbox" id="ignite"> J'ai Embrasement</label>
+            <label class="tog"><input type="checkbox" id="qIso"> Q sur lui seul (4 coups)</label>
+            <label class="tog"><input type="checkbox" id="r"> Ultime actif</label>
+          </div>
+        </section>
+      </div>
+      <div class="col right">
+        <div class="sum" id="sum"><section class="card">
+          <img class="vicon" id="vicon" alt="" onerror="this.style.visibility='hidden'" onload="this.style.visibility='visible'">
+          <div><div class="vwho" id="vwho"></div><div class="vword" id="vword"></div></div>
+          <div class="vsub" id="vsub"></div>
+        </section></div>
+        <section class="card">
+          <h2>Tes combos de base</h2>
+          <div id="presets"></div>
+          <div class="legend"><span style="--c:var(--phys)">Physique</span><span style="--c:var(--magic)">Magique</span><span style="--c:var(--true)">Brut</span><span style="--c:rgba(0,0,0,.6)">Barre pleine = ses PV actuels</span></div>
+        </section>
+      </div>
     </div>
+  </div>
 
-    <div class="col">
-      <section class="card">
-        <h2>Ton combo</h2>
-        <div class="seq" id="seq" aria-label="Combo, clique sur une action pour la retirer"></div>
-        <div class="row">
-          <button class="act A" data-add="A">+ Auto</button><button class="act Q" data-add="Q">+ Q</button><button class="act E" data-add="E">+ E</button>
-          <button class="btn" id="undo">Retirer la dernière</button><button class="btn" id="clear">Vider</button>
-        </div>
-        <div class="row" style="margin-top:12px">
-          <label class="tog"><input type="checkbox" id="qIso"> Q sur cible isolée (les 4 coups sur lui)</label>
-        </div>
-        <div class="row" style="margin-top:8px">
-          <span class="lbl">Double frappe déjà chargée</span>
-          <div class="seg" id="ds"><button data-v="0">0</button><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button></div>
-        </div>
-        <div id="timeline"></div>
-      </section>
-
-      <section class="card">
-        <h2>Pour le tuer depuis ses PV actuels</h2>
-        <div class="tiles" id="kills"></div>
-      </section>
-
-      <section class="card">
-        <h2>Tes dégâts sur lui, à l'unité</h2>
-        <div class="tiles" id="units"></div>
-        <details>
-          <summary>Valeurs utilisées et limites</summary>
-          <ul id="values"></ul>
-        </details>
-      </section>
+  <!-- ============ LABO ============ -->
+  <div class="panel" id="panel-labo" role="tabpanel">
+    <div class="grid">
+      <div class="col">
+        <section class="card">
+          <h2>Réglages d'avant-game</h2>
+          <div class="row">
+            <span class="lbl">Version du Q</span>
+            <div class="seg" id="patch"><button data-v="16.22">70 % AD</button><button data-v="16.23">60 % AD (nerf)</button></div>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <label class="lbl">Rune clé
+              <select id="rune">
+                <option value="none">Non comptée</option><option value="lt">Tempo mortel</option><option value="conq">Conquérant</option>
+                <option value="pta">Attaque soutenue</option><option value="hob">Déluge de lames</option>
+              </select></label>
+            <span class="grp"><span class="lbl">Fragments force adaptative</span><div class="seg" id="shards"><button data-v="0">0</button><button data-v="1">1</button><button data-v="2">2</button></div></span>
+          </div>
+          <h3>Rangs des sorts (réglés tout seuls selon ton niveau)</h3>
+          <div class="row">
+            <span class="grp"><span class="lbl">Q</span><div class="step"><button data-step="yi.qRank:-1" aria-label="Rang Q moins">−</button><output id="qRank"></output><button data-step="yi.qRank:1" aria-label="Rang Q plus">+</button></div></span>
+            <span class="grp"><span class="lbl">E</span><div class="step"><button data-step="yi.eRank:-1" aria-label="Rang E moins">−</button><output id="eRank"></output><button data-step="yi.eRank:1" aria-label="Rang E plus">+</button></div></span>
+            <span class="grp"><span class="lbl">Double frappe déjà chargée</span><div class="seg" id="ds"><button data-v="0">0</button><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button></div></span>
+          </div>
+          <h3>Ajustements sur l'adversaire</h3>
+          <div class="row">
+            <label class="lbl">Bouclier <input type="number" id="shield" min="0" step="10"></label>
+            <label class="lbl">PV bonus <input type="number" id="extraHp" step="10"></label>
+            <label class="lbl">Armure bonus <input type="number" id="extraArmor" step="1"></label>
+          </div>
+          <div class="tiles" id="yiTiles" style="margin-top:16px"></div>
+        </section>
+        <section class="card">
+          <h2>Tes dégâts sur lui, à l'unité</h2>
+          <div class="tiles" id="units"></div>
+          <details>
+            <summary>Valeurs utilisées et limites</summary>
+            <ul id="values"></ul>
+          </details>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card">
+          <h2>Combo sur mesure</h2>
+          <div class="seq" id="seq" aria-label="Combo, clique sur une action pour la retirer"></div>
+          <div class="row">
+            <button class="act A" data-add="A">+ Auto</button><button class="act Q" data-add="Q">+ Q</button><button class="act W" data-add="W">+ W</button><button class="act E" data-add="E">+ E</button>
+            <button class="btn" id="undo">Retirer la dernière</button><button class="btn" id="clear">Vider</button>
+          </div>
+          <div id="custom" class="vsub" style="margin-top:12px"></div>
+          <div class="tablewrap" id="timeline"></div>
+        </section>
+      </div>
     </div>
   </div>
 </div>
@@ -339,6 +397,11 @@ function simulate(cfg, tgt, seq, DB, champ, opt) {
   let firstAtk = true;
   for (const a of seq) {
     if (a === 'E') { S.eEnd = S.t + YI.eDur; steps.push({ label: 'Style Wuju (E)', kind: 'E', phys: 0, magic: 0, tru: 0, total: 0, hp: S.hp, t: S.t, e: true }); continue; }
+    if (a === 'W') {                          // Méditation annulée tout de suite : réinitialise le délai d'attaque
+      const eLeft = S.eEnd - S.t; S.t += 0.2; if (eLeft > 0) S.eEnd = S.t + eLeft;
+      steps.push({ label: 'Méditation (W), reset d\'auto', kind: 'W', phys: 0, magic: 0, tru: 0, total: 0, hp: S.hp, t: S.t, e: eOn() });
+      firstAtk = true; continue;
+    }
     if (a === 'Q') {
       const base = YI.qBase[qRank - 1] + YI.qRatio[cfg.patch || '16.23'] * curAD();
       const iso = !!cfg.qIso;
@@ -436,12 +499,24 @@ function defaultPatch() { const p = VER.split('.'); return (+p[0] > 16 || (+p[0]
 // ---------- État ----------
 const ORDER = ['Q', 'E', 'W', 'Q', 'Q', 'R', 'Q', 'E', 'Q', 'E', 'R', 'E', 'E', 'W', 'W', 'R', 'W', 'W'];
 const rankAt = (k, l) => Math.max(1, ORDER.slice(0, l).filter(x => x === k).length);
-const KEY = 'wuju-calc-v1';
+const PRESETS = [
+  ['Poke', ['Q']],
+  ['Poke + auto', ['Q', 'A']],
+  ['Trade court', ['E', 'Q', 'A']],
+  ['Trade au corps à corps', ['E', 'A', 'W', 'A']],
+  ['Trade', ['E', 'Q', 'A', 'A']],
+  ['Trade avec reset', ['E', 'Q', 'A', 'W', 'A']],
+  ['Trade long', ['E', 'Q', 'A', 'A', 'A']],
+  ['Sans le Q (gardé pour esquiver)', ['E', 'A', 'W', 'A', 'A', 'A']],
+  ['Trade long avec reset', ['E', 'Q', 'A', 'W', 'A', 'A']],
+  ['All-in', ['E', 'Q', 'A', 'W', 'A', 'A', 'A', 'A']]
+];
+const KEY = 'wuju-calc-v2';
 let state = {
-  patch: defaultPatch(), patchSet: false,
+  tab: 'game', patch: defaultPatch(), patchSet: false, recents: ['Syndra', 'Zed', 'Ahri', 'Yasuo', 'Viktor'],
   yi: { level: 5, qRank: 3, eRank: 1, items: ['1036', '1036'], shards: 2, rune: 'none', r: false, ignite: false, qIso: true, dsStacks: 0 },
   tg: { id: 'Syndra', level: 5, items: ['1056'], hpPct: 60, bone: false, shield: 0, extraHp: 0, extraArmor: 0 },
-  seq: ['Q', 'E', 'A', 'A', 'A']
+  seq: ['E', 'Q', 'A', 'A', 'A']
 };
 try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.yi && s.tg && CH[s.tg.id]) state = Object.assign(state, s); } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
@@ -452,30 +527,42 @@ const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 const r0 = x => Math.round(x);
 const cimg = id => `https://ddragon.leagueoflegends.com/cdn/${VER}/img/champion/${id}.png`;
 const iimg = id => `https://ddragon.leagueoflegends.com/cdn/${VER}/img/item/${id}.png`;
-const IMG = (src, cls) => `<img ${cls ? `class="${cls}"` : ''} src="${src}" alt="" loading="lazy" onerror="this.style.display='none'">`;
+const IMG = src => `<img src="${src}" alt="" loading="lazy" onerror="this.style.display='none'">`;
+const keys = seq => seq.map(a => `<span class="k ${a}">${a === 'A' ? 'Auto' : a}</span>`).join('');
 
 const YI_QUICK = ['1036', '1055', '1037', '1038', '1042', '1043', '3006'];
 const TG_QUICK = ['1056', '1054', '1055', '1029', '1028', '1082', '3047'];
-
 function cfg() { return Object.assign({ patch: state.patch }, state.yi); }
 
-// ---------- Rendu des parties fixes ----------
+// ---------- Parties fixes ----------
+function champBtn(c) { return `<button class="chip${c[0] === state.tg.id ? ' on' : ''}" data-champ="${c[0]}">${IMG(cimg(c[0]))}${esc(c[1])}</button>`; }
 function renderChamps() {
   const q = norm($('csearch').value.trim());
-  $('champs').innerHTML = DATA.c.filter(c => c[0] !== 'MasterYi' && (!q || norm(c[1]).includes(q) || norm(c[0]).includes(q)))
-    .map(c => `<button class="chip${c[0] === state.tg.id ? ' on' : ''}" data-champ="${c[0]}">${IMG(cimg(c[0]))}${esc(c[1])}</button>`).join('');
+  $('champs').innerHTML = DATA.c.filter(c => c[0] !== 'MasterYi' && (!q || norm(c[1]).includes(q) || norm(c[0]).includes(q))).map(champBtn).join('');
+  $('recents').innerHTML = state.recents.filter(id => CH[id]).map(id => champBtn(CH[id])).join('');
 }
-function itemBtn(id, extra) { const it = DB[id]; return it ? `<button class="chip" data-item="${id}" title="${it.g} PO">${IMG(iimg(id))}${esc(it.n)}${extra || ''}</button>` : ''; }
+function itemBtn(id) { const it = DB[id]; return it ? `<button class="chip" data-item="${id}" title="${it.g} PO">${IMG(iimg(id))}${esc(it.n)}</button>` : ''; }
 function renderPicker(side) {
   const st = state[side], useful = side === 'yi' ? ['ad', 'as', 'cr', 'le', 'pe', 'oh'] : ['hp', 'ar', 'mr'];
-  $(side + 'Quick').innerHTML = (side === 'yi' ? YI_QUICK : TG_QUICK).map(id => itemBtn(id)).join('');
+  $(side + 'Quick').innerHTML = (side === 'yi' ? YI_QUICK : TG_QUICK).map(itemBtn).join('');
   $(side + 'Items').innerHTML = st.items.map((id, i) => DB[id] ? `<button class="chip on" data-rm="${i}" aria-label="Retirer ${esc(DB[id].n)}">${IMG(iimg(id))}${esc(DB[id].n)} <span class="x">×</span></button>` : '').join('');
   const q = norm($(side + 'Search').value.trim());
   $(side + 'Results').innerHTML = q.length < 2 ? '' : DATA.i.filter(i => norm(i.n).includes(q) && useful.some(k => i[k])).slice(0, 10).map(i => itemBtn(i.id)).join('');
 }
+function buildPresets() {       // lignes créées une seule fois, pour que les barres s'animent
+  $('presets').innerHTML = PRESETS.map(([name], i) => `<button class="combo" data-preset="${i}" style="--i:${i}">
+    <div><div class="name">${esc(name)}</div><div class="keys"></div></div><div class="res"></div>
+    <div class="bar"><i class="p"></i><i class="m"></i><i class="t"></i></div>
+    <div class="meta"></div></button>`).join('');
+}
 function renderStatic() { renderChamps(); renderPicker('yi'); renderPicker('tg'); }
+function setTab(t) {
+  state.tab = t;
+  for (const k of ['game', 'labo']) { $('panel-' + k).classList.toggle('on', k === t); $('tab-' + k).setAttribute('aria-selected', String(k === t)); }
+  const b = $('tab-' + t); $('ink').style.left = b.offsetLeft + 'px'; $('ink').style.width = b.offsetWidth + 'px';
+}
 
-// ---------- Rendu des résultats ----------
+// ---------- Résultats ----------
 function seg(id, val) { $(id).querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === String(val)))); }
 function parts(s) {
   const a = [];
@@ -484,6 +571,7 @@ function parts(s) {
   if (s.tru > 0.5) a.push(`<span class="t">${r0(s.tru)}</span>`);
   return a.join(' + ') || '—';
 }
+let lastVerdict = '';
 function render() {
   const champ = CH[state.tg.id] || DATA.c[0];
   const c = cfg(), t = state.tg;
@@ -499,55 +587,59 @@ function render() {
   for (const k of ['shield', 'extraHp', 'extraArmor']) if (document.activeElement !== $(k)) $(k).value = t[k] || '';
   $('rune').value = state.yi.rune; $('ignite').checked = state.yi.ignite; $('r').checked = state.yi.r; $('qIso').checked = state.yi.qIso;
   seg('patch', state.patch); seg('shards', state.yi.shards); seg('ds', state.yi.dsStacks);
-  $('dataver').textContent = `Données Riot ${VER} · ${LIVE ? 'à jour' : 'copie intégrée'}`;
+  $('dataver').textContent = `Données Riot ${VER} · ${LIVE ? 'à jour' : 'copie intégrée'} · Q à ${YI.qRatio[state.patch] * 100} % AD`;
 
-  // verdict
-  const dead = R.hpLeft <= 0, has = state.seq.length > 0 || state.yi.ignite;
-  const w = x => (100 * Math.max(0, x) / (R.hpMax + (t.shield || 0))).toFixed(2);
-  const scale = dead ? R.startHp / R.total : 1;       // on ne dessine pas plus de dégâts qu'il n'a de PV
-  $('verdict').innerHTML = `<div class="vcard ${!has ? '' : dead ? 'kill' : 'safe'}">
-    ${IMG(cimg(champ[0]), 'vicon')}
-    <div class="vwho">${esc(champ[1])} <small>niv. ${t.level} · ${r0(R.armor)} armure · ${r0(R.mr)} RM</small></div>
-    <div class="vword">${!has ? '—' : dead ? 'Il meurt' : 'Il survit'}</div>
-    <div class="vsub">${!has ? 'Compose un combo pour voir le résultat.' :
-      `Ton combo fait <b class="num">${r0(R.total)}</b> dégâts sur ses <b class="num">${r0(R.startHp)}</b> PV${t.shield ? ' (bouclier compris)' : ''}. ` +
-      (dead ? `Marge : <b class="num">${r0(-R.hpLeft)}</b> PV.` : `Il lui reste <b class="num">${r0(R.hpLeft)}</b> PV.`)}</div>
-    <div class="hpbar" role="img" aria-label="Barre de vie après le combo">
-      <i class="left" style="width:${w(R.hpLeft)}%"></i><i class="p" style="width:${w(R.tot.phys * scale)}%"></i><i class="m" style="width:${w(R.tot.magic * scale)}%"></i><i class="t" style="width:${w(R.tot.tru * scale)}%"></i>
-    </div>
-    <div class="legend"><span style="--c:#3f8f5a">PV restants</span><span style="--c:var(--phys)">Physique ${r0(R.tot.phys)}</span>${R.tot.magic > 0.5 ? `<span style="--c:var(--magic)">Magique ${r0(R.tot.magic)}</span>` : ''}<span style="--c:var(--true)">Brut ${r0(R.tot.tru)}</span></div>
-  </div>`;
+  // combos de base
+  let best = -1, top = null;
+  const rows = $('presets').children;
+  PRESETS.forEach(([name, seq], i) => {
+    const r = simulate(c, t, seq, DB, champ), el = rows[i], dead = r.hpLeft <= 0;
+    if (dead && best < 0) best = i;
+    if (!top || r.total > top.total) top = r;
+    el.classList.toggle('kill', dead);
+    el.querySelector('.keys').innerHTML = keys(seq) + (c.ignite ? '<span class="k I">Embr.</span>' : '');
+    el.querySelector('.res').innerHTML = dead ? `Mort<small>${r0(-r.hpLeft)} PV de marge</small>` : `<span class="num">${r0(r.total)}</span><small>reste ${r0(r.hpLeft)} PV</small>`;
+    const sc = Math.min(1, r.startHp / r.total), w = x => (100 * x * sc / r.startHp).toFixed(2) + '%';
+    el.querySelector('.p').style.width = w(r.tot.phys); el.querySelector('.m').style.width = w(r.tot.magic); el.querySelector('.t').style.width = w(r.tot.tru);
+    el.querySelector('.meta').innerHTML = `<span class="best-tag">Le plus court qui tue · </span>${r0(r.total)} dégâts en ${r.time.toFixed(1)} s · tue sous ${r0(r.total)} PV (${Math.min(100, 100 * r.total / r.hpMax).toFixed(0)} %)`;
+  });
+  [...rows].forEach((el, i) => el.classList.toggle('best', i === best));
 
-  // combo
+  // résumé
+  const a0 = autosToKill(c, t, [], DB, champ), a1 = autosToKill(c, t, ['E'], DB, champ), a2 = autosToKill(c, t, ['Q', 'E'], DB, champ);
+  const n = a => a ? (a.n === 0 ? '0' : a.n) : '40+';
+  $('sum').classList.toggle('kill', best >= 0);
+  $('vicon').src = cimg(champ[0]);
+  $('vwho').innerHTML = `${esc(champ[1])} <small>niv. ${t.level} · ${r0(R.armor)} armure · ${r0(R.startHp)} PV${t.shield ? ' (bouclier compris)' : ''}</small>`;
+  const word = best >= 0 ? `${PRESETS[best][1].map(a => a === 'A' ? 'Auto' : a).join(' · ')} le tue` : `Aucun combo ne tue`;
+  if (word !== lastVerdict) { const v = $('vword'); v.textContent = word; v.classList.remove('pop'); void v.offsetWidth; v.classList.add('pop'); lastVerdict = word; }
+  $('vsub').innerHTML = (best >= 0 ? `C'est ton combo le plus court qui passe.` : `Il manque <b class="num">${r0(R.startHp - top.total)}</b> PV à ton all-in.`) +
+    ` Autos pour le finir : <b>${n(a0)}</b> à sec, <b>${n(a1)}</b> avec E, <b>${n(a2)}</b> après Q + E.`;
+
+  // labo : combo sur mesure
+  const dead = R.hpLeft <= 0;
   $('seq').innerHTML = state.seq.map((a, i) => `<button class="act ${a}" data-del="${i}" aria-label="Retirer">${a === 'A' ? 'Auto' : a}</button>`).join('');
-  let killed = false;
-  const rows = R.steps.map(s => {
+  $('custom').innerHTML = !state.seq.length ? '' : `Ce combo fait <b class="num">${r0(R.total)}</b> dégâts sur ses <b class="num">${r0(R.startHp)}</b> PV. ` + (dead ? `<b style="color:var(--kill)">Il meurt</b>, avec ${r0(-R.hpLeft)} PV de marge.` : `Il survit avec <b class="num">${r0(R.hpLeft)}</b> PV.`);
+  let killed = false; const eIdx = state.seq.indexOf('E');
+  const trs = R.steps.map((s, i) => {
     const cls = killed ? 'after' : s.hp <= 0 ? 'dead' : ''; if (s.hp <= 0) killed = true;
-    return `<tr class="${cls}"><td>${esc(s.label)}${s.kind === 'A' && !s.e && state.seq.includes('E') && state.seq.indexOf('E') < R.steps.indexOf(s) ? ' <span style="color:var(--brass)">(E fini)</span>' : ''}</td><td>${s.kind === 'E' ? '—' : s.t.toFixed(1) + ' s'}</td><td>${parts(s)}</td><td class="num">${s.kind === 'E' ? '' : r0(s.total)}</td><td class="num">${s.hp <= 0 ? 'mort' : r0(s.hp)}</td></tr>`;
+    const noDmg = s.kind === 'E' || s.kind === 'W';
+    return `<tr class="${cls}"><td>${esc(s.label)}${s.kind === 'A' && !s.e && eIdx >= 0 && eIdx < i ? ' <span style="color:var(--petal)">(E fini)</span>' : ''}</td><td>${s.t.toFixed(1)} s</td><td>${noDmg ? '—' : parts(s)}</td><td class="num">${noDmg ? '' : r0(s.total)}</td><td class="num">${s.hp <= 0 ? 'mort' : r0(s.hp)}</td></tr>`;
   }).join('');
-  $('timeline').innerHTML = R.steps.length ? `<table><thead><tr><th>Action</th><th>Temps</th><th>Détail</th><th>Dégâts</th><th>PV restants</th></tr></thead><tbody>${rows}</tbody></table>` +
-    (R.unknown.length ? `<p class="warn">Effet à l'impact non calculé pour : ${esc(R.unknown.join(', '))} (les stats de l'objet sont comptées).</p>` : '') : '';
+  $('timeline').innerHTML = R.steps.length ? `<table><thead><tr><th>Action</th><th>Temps</th><th>Détail</th><th>Dégâts</th><th>PV restants</th></tr></thead><tbody>${trs}</tbody></table>` : '';
+  if (R.unknown.length) $('timeline').innerHTML += `<p class="warn">Effet à l'impact non calculé pour : ${esc(R.unknown.join(', '))} (les stats de l'objet sont comptées).</p>`;
 
-  // autos pour tuer
-  const ks = [['Autos seules', []], ['E puis autos', ['E']], ['Q, E puis autos', ['Q', 'E']]];
-  $('kills').innerHTML = ks.map(([k, pre]) => {
-    const a = autosToKill(c, t, pre, DB, champ);
-    return `<div class="tile"><div class="k">${k}${state.yi.ignite ? ' + Embrasement' : ''}</div><div class="v">${a ? (a.n === 0 ? 'Déjà mort' : a.n + (a.n > 1 ? ' autos' : ' auto')) : '40+'}</div><div class="s">${a ? 'environ ' + a.time.toFixed(1) + ' s' : 'trop tanky'}</div></div>`;
-  }).join('');
-
-  // dégâts unitaires (sur ses PV actuels, sans Plaque d'os ni Embrasement)
+  // dégâts unitaires (sans Plaque d'os ni Embrasement)
   const tu = Object.assign({}, t, { bone: false }), cu = Object.assign({}, c, { ignite: false, dsStacks: 0 });
   const one = (seq, extra) => r0(simulate(Object.assign({}, cu, extra || {}), tu, seq, DB, champ).total);
   const U = [['Auto', one(['A'])], ['Auto avec E', one(['E', 'A'])], ['Q, 1 coup', one(['Q'], { qIso: false })], ['Q, 4 coups sur lui', one(['Q'], { qIso: true })], ['Q isolé avec E', one(['E', 'Q'], { qIso: true })]];
-  $('units').innerHTML = U.map(([k, v]) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${(100 * v / R.hpMax).toFixed(1)} % de ses PV max</div></div>`).join('');
-
-  // stats de Yi
+  $('units').innerHTML = U.map(([k, v]) => `<div class="tile"><div class="tk">${k}</div><div class="v">${v}</div><div class="s">${(100 * v / R.hpMax).toFixed(1)} % de ses PV max</div></div>`).join('');
   $('yiTiles').innerHTML = [['Dégâts d\'attaque', r0(R.ad), `dont ${r0(R.bonusAD)} bonus`], ['Vitesse d\'attaque', R.as.toFixed(2), `${Math.floor(5 * R.as) + 1} autos pendant le E`], ['Armure adverse', r0(R.armorEff), `tu infliges ${(100 * R.pm).toFixed(0)} % du physique`]]
-    .map(([k, v, s]) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`).join('');
-
+    .map(([k, v, s]) => `<div class="tile"><div class="tk">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`).join('');
   $('values').innerHTML = [
     `Q : ${YI.qBase.join(' / ')} + ${YI.qRatio[state.patch] * 100} % AD. Chaque coup suivant sur la même cible fait 25 %. Effets à l'impact à 65 % (16,25 % pour les coups suivants).`,
-    `E : ${YI.eBase.join(' / ')} + 35 % AD bonus en dégâts bruts à chaque attaque, pendant 5 s. Le Q met la durée en pause.`,
+    `E : ${YI.eBase.join(' / ')} + 35 % AD bonus en dégâts bruts à chaque attaque, pendant 5 s. Le Q et le W mettent la durée en pause.`,
+    `W : compté comme un reset d'auto annulé tout de suite (0,2 s), sans soin ni réduction de dégâts.`,
     `Double frappe : la 4e attaque frappe deux fois, la seconde à 50 % AD avec les effets à l'impact.`,
     `Yi : 65 AD + 2,5 par niveau. Fragment de force adaptative : 5,4 AD.`,
     `Lame du roi déchu : 9 % des PV actuels. Tueur de krakens : 150 à 200 toutes les 3 attaques, jusqu'à +75 % selon les PV manquants. Guinsoo 30, Au bout du rouleau 45, Terminus 30, Arc courbe 15.`,
@@ -563,13 +655,17 @@ function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 document.addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   const d = b.dataset;
-  if (d.step) {
+  if (d.tab) { setTab(d.tab); save(); return; }
+  if (d.preset != null) { state.seq = PRESETS[+d.preset][1].slice(); setTab('labo'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  else if (d.step) {
     const [path, dv] = d.step.split(':'), [o, k] = path.split('.');
-    const max = k === 'level' ? 18 : 5;
-    state[o][k] = clamp(state[o][k] + (+dv), 1, max);
-    if (path === 'yi.level') { state.yi.qRank = rankAt('Q', state.yi.level); state.yi.eRank = rankAt('E', state.yi.level); if (!state.tgLevelSet) state.tg.level = state.yi.level; }
-    if (path === 'tg.level') state.tgLevelSet = true;
-  } else if (d.champ) { state.tg.id = d.champ; state.tg.items = []; state.tg.shield = 0; state.tg.extraHp = 0; state.tg.extraArmor = 0; renderChamps(); }
+    state[o][k] = clamp(state[o][k] + (+dv), 1, k === 'level' ? 18 : 5);
+    if (path === 'yi.level') { state.yi.qRank = rankAt('Q', state.yi.level); state.yi.eRank = rankAt('E', state.yi.level); }
+  } else if (d.champ) {
+    if (d.champ !== state.tg.id) { state.tg.id = d.champ; state.tg.items = []; state.tg.shield = 0; state.tg.extraHp = 0; state.tg.extraArmor = 0; }
+    state.recents = [d.champ].concat(state.recents.filter(x => x !== d.champ)).slice(0, 6);
+    $('csearch').value = ''; renderChamps();
+  }
   else if (d.hp) state.tg.hpPct = +d.hp;
   else if (d.item || d.rm != null) {
     const side = b.closest('#yiQuick,#yiItems,#yiResults') ? 'yi' : 'tg';
@@ -594,7 +690,7 @@ $('yiSearch').addEventListener('input', () => renderPicker('yi'));
 $('tgSearch').addEventListener('input', () => renderPicker('tg'));
 $('hpPct').addEventListener('input', e => { state.tg.hpPct = +e.target.value; render(); });
 $('hpAbs').addEventListener('input', e => {
-  const champ = CH[state.tg.id], max = targetStats(state.tg, DB, champ).hpMax, v = +e.target.value;
+  const max = targetStats(state.tg, DB, CH[state.tg.id]).hpMax, v = +e.target.value;
   if (v > 0) { state.tg.hpPct = clamp(100 * v / max, 0.1, 100); render(); }
 });
 for (const k of ['shield', 'extraHp', 'extraArmor']) $(k).addEventListener('input', e => { state.tg[k] = +e.target.value || 0; render(); });
@@ -603,8 +699,13 @@ $('rune').addEventListener('change', e => { state.yi.rune = e.target.value; rend
 $('ignite').addEventListener('change', e => { state.yi.ignite = e.target.checked; render(); });
 $('r').addEventListener('change', e => { state.yi.r = e.target.checked; render(); });
 $('qIso').addEventListener('change', e => { state.yi.qIso = e.target.checked; render(); });
+window.addEventListener('resize', () => setTab(state.tab));
 
-renderStatic(); render(); refreshLive();
+// pétales : quelques-uns seulement, pour l'ambiance du poster
+$('petals').innerHTML = Array.from({ length: 9 }, (_, i) => `<i style="left:${8 + i * 11}%;animation-duration:${13 + (i * 7) % 11}s;animation-delay:-${(i * 5) % 13}s;transform:scale(${0.7 + (i % 3) * 0.3})"></i>`).join('');
+
+buildPresets(); renderStatic(); setTab(state.tab === 'labo' ? 'labo' : 'game'); render(); refreshLive();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setTab(state.tab));
 
 </script>
 </body>
